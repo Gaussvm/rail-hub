@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Classic ERP Color Scheme (Industrial/Executive) */
+  --color-primary: #1F4287; /* Steel Blue */
+  --color-primary-dark: #071E3D;
+  --color-secondary: #278EA5;
+  --color-accent: #21E6C1;
+  --color-danger: #D32F2F;
+  --color-warning: #FFA000;
+  --color-success: #388E3C;
+  --color-background: #F4F6F8; /* Light gray background for contrast */
+  --color-surface: #FFFFFF; /* White panels */
+  
+  --color-text-main: #2C3E50;
+  --color-text-muted: #7F8C8D;
+  --color-text-light: #FFFFFF;
+  
+  --border-color: #E0E4E8;
+  --border-color-focus: #1F4287;
+
+  /* Typography & Density */
+  --font-family: 'Inter', system-ui, sans-serif;
+  --font-size-base: 13px; /* High density scannability */
+  --font-size-sm: 11px;
+  --font-size-lg: 16px;
+  --font-size-h1: 20px;
+  --font-size-h2: 16px;
+
+  /* Spacing (Compact for high density) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+
+  /* Layout Widths */
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 60px;
+  --topbar-height: 50px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-main);
+  background-color: var(--color-background);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Classic Input Fields */
+input, select, textarea {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  padding: 6px var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+  transition: border-color 0.15s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 2px rgba(31, 66, 135, 0.1);
+}
+
+/* Classic Button Structure */
+button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  padding: 6px var(--spacing-md);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border-color: var(--color-primary-dark);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--color-text-main);
+  border-color: var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #cdd4dc;
+}
+
+/* Classic Data Table */
+.data-table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--color-surface);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  padding: 8px var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+/* Card Panel - Classic UI Window */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.panel-header {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background-color: #fcfcfc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.panel-body {
+  padding: var(--spacing-md);
+}
+
+/* Base utility classes */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
