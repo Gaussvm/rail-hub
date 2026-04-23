@@ -1,0 +1,62 @@
+.module-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.module-header {
+  padding-bottom: 20px;
+}
+
+.module-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 4px;
+}
+
+.module-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Tab Navigation System */
+.module-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.module-tabs .tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.module-tabs .tab:hover {
+  color: var(--color-primary);
+  background-color: var(--color-bg-hover);
+  border-bottom-color: var(--color-border);
+}
+
+.module-tabs .tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  background-color: transparent;
+}
+
+.module-content {
+  flex: 1;
+  overflow-y: auto;
+  /* El contenido de cada pestaña se asegura de usar bien este espacio */
+}

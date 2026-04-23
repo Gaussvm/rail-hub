@@ -71,3 +71,44 @@
 .nav-item svg {
   min-width: 18px;
 }
+
+/* Master Item / Accordion Toggle */
+button.master-item {
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  text-align: left;
+}
+
+button.master-item.active-master {
+  color: var(--color-surface);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.expand-icon {
+  margin-left: auto;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+/* Submenu container */
+.sidebar-submenu {
+  background-color: rgba(0, 0, 0, 0.15); /* Slightly darker to indicate nesting */
+  margin-bottom: 8px;
+}
+
+.sub-item {
+  padding-left: calc(var(--spacing-xl) + 24px); /* Incremented padding for nesting effect */
+  font-size: 0.9em;
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+}
+
+.sub-item.active {
+  border-left: none; /* Sub menu looks cleaner without heavy border, maybe a different indicator */
+  color: var(--color-accent);
+}
