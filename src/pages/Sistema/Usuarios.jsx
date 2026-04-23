@@ -14,7 +14,7 @@ const modulosAccesibles = [
   { id: 'sistema', label: 'Configuración de Sistema', color: '#34495E' }
 ];
 
-const rolesUI = ['ADMINISTRADOR', 'GERENTE', 'VERIFICADOR', 'USUARIO', 'AUDITOR', 'SOLO LECTURA'];
+const rolesUI = ['ADMINISTRADOR', 'GERENTE', 'VERIFICADOR', 'USUARIO', 'AUDITOR', 'SOLO LECTURA', 'CLIENTE'];
 
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
