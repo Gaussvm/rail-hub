@@ -41,7 +41,6 @@ const DICCIONARIOS = [
   { id: 'CONCEPTOS_NOMINA', label: 'Conceptos Nómina', icon: <Wallet size={18} /> },
   { id: 'TIPOS_ACTIVO', label: 'Tipos de Activo', icon: <MonitorPlay size={18} /> },
   { id: 'VIAS', label: 'Vías', icon: <GitBranch size={18} /> },
-  { id: 'SIC_CLIENTES', label: 'SIC CLIENTES', icon: <Building size={18} /> },
   { id: 'CLIENTES', label: 'Clientes', icon: <Handshake size={18} /> }
 ];
 
