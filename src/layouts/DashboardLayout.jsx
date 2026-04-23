@@ -9,7 +9,9 @@ const DashboardLayout = () => {
   const location = useLocation();
   const { userProfile, session } = useAuth();
   
-  const isMaster = session?.user?.email === 'gustavoxone2@gmail.com';
+  const currentEmail = session?.user?.email || '';
+  const isMaster = currentEmail === 'gustavoxone2@gmail.com' || currentEmail === 'gustavozona2@gmail.com';
+  
   const userInitials = userProfile?.nombre ? userProfile.nombre.charAt(0) : (isMaster ? 'G' : 'U');
   const userName = userProfile?.nombre ? `${userProfile.nombre} ${userProfile.apellido_paterno || ''}` : (isMaster ? 'Gustavo (Maestro)' : 'Usuario');
   const userRole = userProfile?.rol_principal || (isMaster ? 'Creador de Sistema' : 'Corporativo');

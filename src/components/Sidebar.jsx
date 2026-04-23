@@ -28,7 +28,8 @@ const Sidebar = () => {
   const location = useLocation();
   const { userProfile, session, logout } = useAuth();
   
-  const isMaster = session?.user?.email === 'gustavoxone2@gmail.com';
+  const currentEmail = session?.user?.email || '';
+  const isMaster = currentEmail === 'gustavoxone2@gmail.com' || currentEmail === 'gustavozona2@gmail.com';
 
   const accesos = isMaster ? {
      operaciones: true,
