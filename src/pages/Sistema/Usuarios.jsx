@@ -26,8 +26,11 @@ export default function GestionUsuarios() {
   const [editingId, setEditingId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { userProfile } = useAuth();
-  const MASTER_EMAIL = 'gustavoxone2@gmail.com';
+  const { userProfile, session } = useAuth();
+  const currentEmail = session?.user?.email || '';
+  const isMasterLogger = currentEmail === 'gustavoxone2@gmail.com' || currentEmail === 'gustavozona2@gmail.com';
+  const MASTER_EMAIL_1 = 'gustavoxone2@gmail.com';
+  const MASTER_EMAIL_2 = 'gustavozona2@gmail.com';
 
   const initialFormState = {
     llave_sistema: '',
@@ -75,7 +78,8 @@ export default function GestionUsuarios() {
   const openFormModal = (user = null) => {
     if (user && user.id) {
        // --- PROTECCIÓN MAESTRA ---
-       if (user.email === MASTER_EMAIL && userProfile?.email !== MASTER_EMAIL) {
+       const isTargetMaster = user.email === MASTER_EMAIL_1 || user.email === MASTER_EMAIL_2;
+       if (isTargetMaster && !isMasterLogger) {
           return alert("🚫 ACCESO DENEGADO: Este es un Perfil Maestro. Solo el creador original puede modificar sus datos y accesos.");
        }
 
@@ -160,7 +164,7 @@ export default function GestionUsuarios() {
 
   const toggleUsuarioStatus = async (id, currentStatus) => {
     const userTarget = usuarios.find(x => x.id === id);
-    if(userTarget && userTarget.email === MASTER_EMAIL) {
+    if(userTarget && (userTarget.email === MASTER_EMAIL_1 || userTarget.email === MASTER_EMAIL_2)) {
         return alert("🚫 OPERACIÓN DENEGADA: El Perfil Maestro es inmutable y no puede ser bloqueado.");
     }
 
@@ -199,6 +203,7 @@ export default function GestionUsuarios() {
               <th style={{ padding: '16px 24px', fontWeight: 700 }}>Rol & Empresa</th>
               <th style={{ padding: '16px 24px', fontWeight: 700 }}>Llave / Placa</th>
               <th style={{ padding: '16px 24px', fontWeight: 700, textAlign: 'center' }}>Estatus</th>
+              <th style={{ padding: '16px 24px', fontWeight: 700, textAlign: 'center' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -229,7 +234,7 @@ export default function GestionUsuarios() {
                        {u.llave_sistema}
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                       {u.email === MASTER_EMAIL ? (
+                       {(u.email === MASTER_EMAIL_1 || u.email === MASTER_EMAIL_2) ? (
                           <span style={{ 
                             padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, 
                             backgroundColor: '#1E293B', color: '#F8FAFC', display: 'inline-block', border: '1px solid #0F172A'
@@ -248,6 +253,20 @@ export default function GestionUsuarios() {
                              {u.es_activo ? 'ACTIVO' : 'BLOQUEADO'}
                           </button>
                        )}
+                    </td>
+                    <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                       <button 
+                         onClick={(e) => { e.stopPropagation(); openFormModal(u); }}
+                         style={{
+                           border: '1px solid #E2E8F0', background: 'white', borderRadius: '8px', padding: '6px 12px',
+                           cursor: 'pointer', fontWeight: 600, fontSize: '12px', color: '#0F172A',
+                           transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 auto'
+                         }}
+                         onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+                         onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+                       >
+                         <Settings size={14} /> Editar
+                       </button>
                     </td>
                   </tr>
                 ))
