@@ -3,10 +3,17 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import './DashboardLayout.css';
 import { Bell, Search } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = () => {
   const location = useLocation();
+  const { userProfile, session } = useAuth();
   
+  const isMaster = session?.user?.email === 'gustavoxone2@gmail.com';
+  const userInitials = userProfile?.nombre ? userProfile.nombre.charAt(0) : (isMaster ? 'G' : 'U');
+  const userName = userProfile?.nombre ? `${userProfile.nombre} ${userProfile.apellido_paterno || ''}` : (isMaster ? 'Gustavo (Maestro)' : 'Usuario');
+  const userRole = userProfile?.rol_principal || (isMaster ? 'Creador de Sistema' : 'Corporativo');
+
   // Format pathname for breadcrumbs (simple version)
   const pathParts = location.pathname.split('/').filter(Boolean);
   const currentPage = pathParts.length > 0 
@@ -43,10 +50,10 @@ const DashboardLayout = () => {
             
             {/* User Details showing Role/Department abstraction */}
             <div className="user-profile-widget" style={{ marginLeft: '12px', paddingLeft: '12px', borderLeft: '1px solid var(--border-color)' }}>
-              <div className="user-avatar">SD</div>
+              <div className="user-avatar">{userInitials}</div>
               <div className="user-info">
-                <span className="user-name">S. Del Valle</span>
-                <span className="user-role">Director de Op. (Mantenimiento)</span>
+                <span className="user-name">{userName}</span>
+                <span className="user-role">{userRole}</span>
               </div>
             </div>
           </div>

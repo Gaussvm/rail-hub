@@ -26,16 +26,25 @@ import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const location = useLocation();
-  const { userProfile, logout } = useAuth();
+  const { userProfile, session, logout } = useAuth();
   
-  const accesos = userProfile?.accesos_modulos || {
+  const isMaster = session?.user?.email === 'gustavoxone2@gmail.com';
+
+  const accesos = isMaster ? {
+     operaciones: true,
+     shopcar: true,
+     inventarios: true,
+     administracion: true,
+     hub_documental: true,
+     sistema: true
+  } : (userProfile?.accesos_modulos || {
      operaciones: false,
      shopcar: false,
      inventarios: false,
      administracion: false,
      hub_documental: false,
      sistema: false
-  };
+  });
 
   const [expanded, setExpanded] = useState({
     operaciones: location.pathname === '/' || location.pathname.startsWith('/activos'),
@@ -262,14 +271,14 @@ const Sidebar = () => {
       <div style={{ marginTop: 'auto', padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#38bdf8', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', color: '#0f172a' }}>
-               {userProfile?.nombre?.charAt(0) || 'U'}
+               {userProfile?.nombre ? userProfile.nombre.charAt(0) : (isMaster ? 'G' : 'U')}
             </div>
             <div style={{ flex: 1, overflow: 'hidden' }}>
                <div style={{ fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                 {userProfile?.nombre} {userProfile?.apellido_paterno}
+                 {userProfile?.nombre ? `${userProfile.nombre} ${userProfile.apellido_paterno || ''}` : (isMaster ? 'Gustavo (Maestro)' : 'Usuario')}
                </div>
                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                 {userProfile?.rol_principal || 'CORPORATIVO'}
+                 {userProfile?.rol_principal || (isMaster ? 'Administrador Sistema' : 'Corporativo')}
                </div>
             </div>
          </div>
