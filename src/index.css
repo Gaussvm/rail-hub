@@ -158,9 +158,8 @@ button {
   background-color: #f1f5f9;
   font-weight: 600;
   color: var(--color-primary-dark);
-  position: sticky;
-  top: 0;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .data-table tbody tr:hover {
