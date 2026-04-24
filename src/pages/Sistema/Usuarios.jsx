@@ -39,7 +39,7 @@ export default function GestionUsuarios() {
     apellido_materno: '',
     email: '',
     rol_principal: 'USUARIO',
-    empresa_id: 'AUTOCOM',
+    empresa_id: ['AUTOCOM'],
     es_activo: true,
     caducidad_pwd: '',
     accesos_modulos: {
@@ -83,10 +83,14 @@ export default function GestionUsuarios() {
           return alert("🚫 ACCESO DENEGADO: Este es un Perfil Maestro. Solo el creador original puede modificar sus datos y accesos.");
        }
 
+       let parsedEmpresas = ['AUTOCOM'];
+       try { parsedEmpresas = typeof user.empresa_id === 'string' && user.empresa_id.startsWith('[') ? JSON.parse(user.empresa_id) : (user.empresa_id ? [user.empresa_id] : ['AUTOCOM']); } catch(e){}
+
        setFormConfig({
          ...user,
          accesos_modulos: typeof user.accesos_modulos === 'string' ? JSON.parse(user.accesos_modulos) : (user.accesos_modulos || initialFormState.accesos_modulos),
-         localidades_autorizadas: typeof user.localidades_autorizadas === 'string' ? JSON.parse(user.localidades_autorizadas) : (user.localidades_autorizadas || [])
+         localidades_autorizadas: typeof user.localidades_autorizadas === 'string' ? JSON.parse(user.localidades_autorizadas) : (user.localidades_autorizadas || []),
+         empresa_id: parsedEmpresas
        });
        setEditingId(user.id);
     } else {
@@ -125,6 +129,18 @@ export default function GestionUsuarios() {
     });
   };
 
+  const handleEmpresaToggle = (empValor) => {
+    setFormConfig(prev => {
+      let current = Array.isArray(prev.empresa_id) ? prev.empresa_id : (prev.empresa_id ? [prev.empresa_id] : []);
+      const isSelected = current.includes(empValor);
+      if (isSelected) {
+        return { ...prev, empresa_id: current.filter(e => e !== empValor) };
+      } else {
+        return { ...prev, empresa_id: [...current, empValor] };
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(!formConfig.nombre || !formConfig.email || !formConfig.llave_sistema) {
@@ -140,7 +156,7 @@ export default function GestionUsuarios() {
          apellido_materno: formConfig.apellido_materno,
          email: formConfig.email.toLowerCase(),
          rol_principal: formConfig.rol_principal,
-         empresa_id: formConfig.empresa_id,
+         empresa_id: typeof formConfig.empresa_id === 'object' ? JSON.stringify(formConfig.empresa_id) : formConfig.empresa_id,
          es_activo: formConfig.es_activo,
          caducidad_pwd: formConfig.caducidad_pwd || null,
          accesos_modulos: formConfig.accesos_modulos,
@@ -228,7 +244,12 @@ export default function GestionUsuarios() {
                     </td>
                     <td style={{ padding: '16px 24px' }}>
                        <div style={{ fontWeight: 600, color: '#0F172A' }}>{u.rol_principal}</div>
-                       <div style={{ fontSize: '12px', color: '#64748B' }}>{u.empresa_id}</div>
+                       <div style={{ fontSize: '12px', color: '#64748B' }}>
+                          {(() => {
+                            try { return (typeof u.empresa_id === 'string' && u.empresa_id.startsWith('[')) ? JSON.parse(u.empresa_id).join(', ') : u.empresa_id; }
+                            catch { return u.empresa_id; }
+                          })()}
+                       </div>
                     </td>
                     <td style={{ padding: '16px 24px', fontFamily: 'monospace', color: '#475569', fontWeight: 600 }}>
                        {u.llave_sistema}
@@ -341,12 +362,29 @@ export default function GestionUsuarios() {
                  </div>
 
                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>Empresa Asignada</label>
-                    <select name="empresa_id" value={formConfig.empresa_id} onChange={handleChange} style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', background: 'white', outline: 'none' }}>
-                       <option value="AUTOCOM">Autocom Services</option>
-                       <option value="FNTX">FNTX</option>
-                       <option value="FERROMEX">Ferromex / Tercerizado</option>
-                    </select>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>Empresas Autorizadas (Multi-empresa)</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                       {['AUTOCOM', 'FNTX', 'FERROMEX'].map(emp => {
+                          const current = Array.isArray(formConfig.empresa_id) ? formConfig.empresa_id : (formConfig.empresa_id ? [formConfig.empresa_id] : []);
+                          const isSelected = current.includes(emp);
+                          const nombres = { 'AUTOCOM': 'Autocom Services', 'FNTX': 'FNTX', 'FERROMEX': 'Ferromex/Tercerizado' };
+                          return (
+                            <div 
+                              key={emp}
+                              onClick={() => handleEmpresaToggle(emp)}
+                              style={{ 
+                                 padding: '6px 12px', background: isSelected ? '#1E3A8A' : 'white', 
+                                 color: isSelected ? 'white' : '#64748B', borderRadius: '20px', 
+                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer', 
+                                 border: isSelected ? '1px solid #1E3A8A' : '1px solid #CBD5E1',
+                                 transition: 'all 0.2s', userSelect: 'none'
+                              }}
+                            >
+                              {nombres[emp]}
+                            </div>
+                          );
+                       })}
+                    </div>
                  </div>
                  
                  <div style={{ padding: '16px', background: '#DBEAFE', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
