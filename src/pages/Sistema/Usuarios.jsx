@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  Users, ShieldCheck, Mail, Database, Save, Activity, Trash2, ShieldAlert
+  Users, ShieldCheck, Mail, Database, Save, Activity, Trash2, ShieldAlert, Settings
 } from 'lucide-react';
 
 const modulosAccesibles = [
