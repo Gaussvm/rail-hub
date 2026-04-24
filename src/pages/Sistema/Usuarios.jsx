@@ -279,18 +279,24 @@ export default function GestionUsuarios() {
                        )}
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                       <button 
-                         onClick={(e) => { e.stopPropagation(); openFormModal(u); }}
-                         style={{
-                           border: '1px solid #E2E8F0', background: 'white', borderRadius: '8px', padding: '6px 12px',
-                           cursor: 'pointer', fontWeight: 600, fontSize: '12px', color: '#0F172A',
-                           transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 auto'
-                         }}
-                         onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
-                         onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
-                       >
-                         <Settings size={14} /> Editar
-                       </button>
+                       {(!MASTER_EMAILS.includes(u.email) || isMasterLogger) ? (
+                         <button 
+                           onClick={(e) => { e.stopPropagation(); openFormModal(u); }}
+                           style={{
+                             border: '1px solid #E2E8F0', background: 'white', borderRadius: '8px', padding: '6px 12px',
+                             cursor: 'pointer', fontWeight: 600, fontSize: '12px', color: '#0F172A',
+                             transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 auto'
+                           }}
+                           onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+                           onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+                         >
+                           <Settings size={14} /> Editar
+                         </button>
+                       ) : (
+                         <div style={{ color: '#94A3B8', fontSize: '12px', fontWeight: 500, fontStyle: 'italic' }}>
+                           Bloqueado
+                         </div>
+                       )}
                     </td>
                   </tr>
                 ))
