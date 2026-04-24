@@ -50,6 +50,22 @@
   padding: 0;
 }
 
+/* Scrollbar Moderna y Premium */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.8);
+}
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
