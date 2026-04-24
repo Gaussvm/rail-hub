@@ -28,9 +28,8 @@ export default function GestionUsuarios() {
 
   const { userProfile, session } = useAuth();
   const currentEmail = session?.user?.email || '';
-  const isMasterLogger = currentEmail === 'gustavoxone2@gmail.com' || currentEmail === 'gustavozona2@gmail.com';
-  const MASTER_EMAIL_1 = 'gustavoxone2@gmail.com';
-  const MASTER_EMAIL_2 = 'gustavozona2@gmail.com';
+  const MASTER_EMAILS = ['gustavoxone2@gmail.com', 'gustavozona2@gmail.com', 'gdelvallem@autocom.com.mx'];
+  const isMasterLogger = MASTER_EMAILS.includes(currentEmail);
 
   const initialFormState = {
     llave_sistema: '',
@@ -78,7 +77,7 @@ export default function GestionUsuarios() {
   const openFormModal = (user = null) => {
     if (user && user.id) {
        // --- PROTECCIÓN MAESTRA ---
-       const isTargetMaster = user.email === MASTER_EMAIL_1 || user.email === MASTER_EMAIL_2;
+       const isTargetMaster = MASTER_EMAILS.includes(user.email);
        if (isTargetMaster && !isMasterLogger) {
           return alert("🚫 ACCESO DENEGADO: Este es un Perfil Maestro. Solo el creador original puede modificar sus datos y accesos.");
        }
@@ -120,6 +119,10 @@ export default function GestionUsuarios() {
 
   const handleLocalidadToggle = (locValor) => {
     setFormConfig(prev => {
+      if (locValor === 'ALL') {
+         if (prev.localidades_autorizadas.length === localidadesCat.length) return { ...prev, localidades_autorizadas: [] };
+         return { ...prev, localidades_autorizadas: localidadesCat.map(l => l.valor) };
+      }
       const isSelected = prev.localidades_autorizadas.includes(locValor);
       if (isSelected) {
         return { ...prev, localidades_autorizadas: prev.localidades_autorizadas.filter(l => l !== locValor) };
@@ -255,7 +258,7 @@ export default function GestionUsuarios() {
                        {u.llave_sistema}
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                       {(u.email === MASTER_EMAIL_1 || u.email === MASTER_EMAIL_2) ? (
+                       {MASTER_EMAILS.includes(u.email) ? (
                           <span style={{ 
                             padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, 
                             backgroundColor: '#1E293B', color: '#F8FAFC', display: 'inline-block', border: '1px solid #0F172A'
@@ -432,6 +435,19 @@ export default function GestionUsuarios() {
                    Localidades Autorizadas (Filtro Geográfico)
                  </h3>
                  
+                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                   <button
+                     type="button"
+                     onClick={() => handleLocalidadToggle('ALL')}
+                     style={{
+                       padding: '8px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, border: '1px solid #1E293B', cursor: 'pointer',
+                       background: formConfig.localidades_autorizadas.length === localidadesCat.length && localidadesCat.length > 0 ? '#1E293B' : 'white', 
+                       color: formConfig.localidades_autorizadas.length === localidadesCat.length && localidadesCat.length > 0 ? 'white' : '#1E293B', transition: 'all 0.2s',
+                       width: '100%'
+                     }}>
+                     {formConfig.localidades_autorizadas.length === localidadesCat.length && localidadesCat.length > 0 ? '✓ Deseleccionar Todas' : 'Seleccionar Todas las Localidades'}
+                   </button>
+                 </div>
                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                    {localidadesCat.length === 0 ? <span style={{ color: '#94A3B8', fontSize: '13px' }}>Aún no hay localidades en el catálogo del sistema.</span> : null}
                    {localidadesCat.map(loc => {
