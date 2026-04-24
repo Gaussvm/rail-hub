@@ -129,9 +129,13 @@ export default function Login() {
 
       </div>
       
-      <div style={{ position: 'absolute', bottom: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-        &copy; {new Date().getFullYear()} Autocom Services S.A. DE C.V.<br/>Acceso restringido al personal corporativo.<br/>
-        <span style={{ marginTop: '8px', display: 'block', color: '#94a3b8' }}>Powered by <b>ZENOX</b></span>
+      <div style={{ position: 'absolute', bottom: '24px', textAlign: 'center', width: '100%' }}>
+        <div style={{ color: '#475569', fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '8px', textTransform: 'uppercase' }}>
+          &copy; {new Date().getFullYear()} Autocom Services. Todos los derechos reservados.
+        </div>
+        <div style={{ color: '#94a3b8', fontSize: '13px', fontWeight: 500 }}>
+          Powered by <b>ZENOX</b> <span style={{ opacity: 0.5 }}>|</span> AI-Driven Solutions
+        </div>
       </div>
 
     </div>
