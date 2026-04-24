@@ -9,7 +9,7 @@
 }
 
 .sidebar-header {
-  height: var(--topbar-height);
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,8 +18,8 @@
 }
 
 .sidebar-header img {
-  max-height: 48px;
-  max-width: 85%;
+  max-height: 70px;
+  max-width: 90%;
   object-fit: contain;
 }
 
