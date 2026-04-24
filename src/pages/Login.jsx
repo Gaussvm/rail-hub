@@ -63,13 +63,9 @@ export default function Login() {
       }}>
         
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'inline-flex', padding: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '16px', marginBottom: '16px' }}>
-             <TrainFront size={32} color="#38bdf8" />
+          <div style={{ background: 'white', padding: '16px', borderRadius: '16px', display: 'inline-block', marginBottom: '16px' }}>
+            <img src="/logo-railhub-bg.png" alt="Rail-Hub Logo" style={{ height: '80px', width: 'auto', display: 'block' }} />
           </div>
-          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>
-             RAIL<span style={{ color: '#38bdf8' }}>-HUB</span>
-          </h1>
-          <p style={{ margin: '8px 0 0 0', color: '#94a3b8', fontSize: '14px' }}>Infraestructura Tecnológica Centralizada</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -134,7 +130,8 @@ export default function Login() {
       </div>
       
       <div style={{ position: 'absolute', bottom: '24px', textAlign: 'center', color: '#64748b', fontSize: '12px' }}>
-        &copy; {new Date().getFullYear()} Autocom Services S.A. DE C.V.<br/>Acceso restringido al personal corporativo.
+        &copy; {new Date().getFullYear()} Autocom Services S.A. DE C.V.<br/>Acceso restringido al personal corporativo.<br/>
+        <span style={{ marginTop: '8px', display: 'block', color: '#94a3b8' }}>Powered by <b>ZENOX</b></span>
       </div>
 
     </div>
