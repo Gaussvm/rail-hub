@@ -28,7 +28,7 @@ export default function GestionUsuarios() {
 
   const { userProfile, session } = useAuth();
   const currentEmail = session?.user?.email || '';
-  const MASTER_EMAILS = ['gustavoxone2@gmail.com', 'gustavozona2@gmail.com', 'gdelvallem@autocom.com.mx'];
+  const MASTER_EMAILS = ['gustavoxone2@gmail.com', 'gustavozona2@gmail.com', 'gdelvallem@autocom.com.mx', 'gdelvallem@autocomm.com.mx'];
   const isMasterLogger = MASTER_EMAILS.includes(currentEmail);
 
   const initialFormState = {
