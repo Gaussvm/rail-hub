@@ -63,7 +63,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <span className="logo-text">RAIL</span><span className="logo-highlight">-HUB</span>
+        <img src="/logo-railhub-bg.png" alt="Rail-Hub Logo" />
       </div>
       
       <nav className="sidebar-nav">
