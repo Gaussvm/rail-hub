@@ -84,8 +84,8 @@ export default function GestionUsuarios() {
     if (user && user.id) {
        // --- PROTECCIÓN MAESTRA ---
        const isTargetMaster = MASTER_EMAILS.includes(user.email);
-       if (isTargetMaster && !isMasterLogger) {
-          return alert("🚫 ACCESO DENEGADO: Este es un Perfil Maestro. Solo el creador original puede modificar sus datos y accesos.");
+       if (isTargetMaster && user.email !== currentEmail) {
+          return alert("🚫 ACCESO DENEGADO: Este es un Perfil de Developer. Nadie más que el propio usuario puede modificar sus datos y accesos.");
        }
 
        let parsedEmpresas = ['AUTOCOM'];
@@ -190,8 +190,8 @@ export default function GestionUsuarios() {
 
   const toggleUsuarioStatus = async (id, currentStatus) => {
     const userTarget = usuarios.find(x => x.id === id);
-    if(userTarget && (userTarget.email === MASTER_EMAIL_1 || userTarget.email === MASTER_EMAIL_2)) {
-        return alert("🚫 OPERACIÓN DENEGADA: El Perfil Maestro es inmutable y no puede ser bloqueado.");
+    if(userTarget && MASTER_EMAILS.includes(userTarget.email)) {
+        return alert("🚫 OPERACIÓN DENEGADA: El Perfil Developer es inmutable y no puede ser bloqueado.");
     }
 
     const { error } = await supabase.from('sys_usuarios').update({ es_activo: !currentStatus }).eq('id', id);
@@ -270,7 +270,7 @@ export default function GestionUsuarios() {
                             padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, 
                             backgroundColor: '#1E293B', color: '#F8FAFC', display: 'inline-block', border: '1px solid #0F172A'
                           }}>
-                             CREADOR MASTER
+                             DEVELOPER
                           </span>
                        ) : (
                           <button 
@@ -286,7 +286,7 @@ export default function GestionUsuarios() {
                        )}
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                       {(!MASTER_EMAILS.includes(u.email) || isMasterLogger) ? (
+                       {(!MASTER_EMAILS.includes(u.email) || u.email === currentEmail) ? (
                          <button 
                            onClick={(e) => { e.stopPropagation(); openFormModal(u); }}
                            style={{
