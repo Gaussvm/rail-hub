@@ -12,20 +12,26 @@ import {
   Users,
   HardHat,
   X,
-  ExternalLink,
-  Plus
+  Plus,
+  Settings,
+  DownloadCloud
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export default function BovedaCalidad() {
   const [activeTab, setActiveTab] = useState('DASHBOARD'); // DASHBOARD, CALIDAD, SIC, RRHH
   const [documentos, setDocumentos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const { userProfile } = useAuth();
+  const isEditor = ['DEVELOPER', 'ADMINISTRADOR', 'GERENTE'].includes(userProfile?.rol_principal);
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [dummyFile, setDummyFile] = useState(null);
 
@@ -85,6 +91,22 @@ export default function BovedaCalidad() {
     }
   };
 
+  const handleEdit = (doc) => {
+    setEditingId(doc.id);
+    setForm({
+      folio_referencia: doc.folio_referencia || '',
+      titulo_documento: doc.titulo_documento || '',
+      categoria: doc.categoria || 'AAR',
+      area: doc.area || 'CALIDAD',
+      url_archivo: doc.url_archivo || '',
+      requiere_renovacion: doc.requiere_renovacion,
+      fecha_emision: doc.fecha_emision || '',
+      fecha_vencimiento: doc.fecha_vencimiento || ''
+    });
+    setDummyFile(null);
+    setShowModal(true);
+  };
+
   const handleSave = async () => {
     if (!form.titulo_documento || !form.categoria) {
       alert("Título del documento y Categoría son obligatorios.");
@@ -109,7 +131,7 @@ export default function BovedaCalidad() {
     }
 
     try {
-      let publicUrl = '';
+      let finalUrl = form.url_archivo;
       if (dummyFile) {
         const fileExt = dummyFile.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -125,20 +147,28 @@ export default function BovedaCalidad() {
           .from('documentos_boveda')
           .getPublicUrl(filePath);
           
-        publicUrl = url;
+        finalUrl = url;
       }
 
-      const { error } = await supabase.from('calidad_documentos').insert([{ 
+      const payload = { 
           ...form,
           fecha_emision: form.fecha_emision || null,
           fecha_vencimiento: form.fecha_vencimiento || null,
           estatus: calcEstatus,
-          url_archivo: publicUrl
-      }]);
-      if (error) throw error;
+          url_archivo: finalUrl
+      };
+
+      if (editingId) {
+        const { error } = await supabase.from('calidad_documentos').update(payload).eq('id', editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('calidad_documentos').insert([payload]);
+        if (error) throw error;
+      }
       
       await fetchDocumentos();
       setShowModal(false);
+      setEditingId(null);
       setIsAddingArea(false);
       setIsAddingCategoria(false);
       setForm(INIT_FORM);
@@ -201,6 +231,7 @@ export default function BovedaCalidad() {
         {activeTab !== 'DASHBOARD' && (
           <button 
             onClick={() => {
+              setEditingId(null);
               setForm({...INIT_FORM, area: activeTab});
               setShowModal(true);
             }}
@@ -318,13 +349,35 @@ export default function BovedaCalidad() {
                        <div style={{ display: 'inline-flex' }}>{getStatusBadge(doc.estatus)}</div>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button 
-                        onClick={() => doc.url_archivo ? window.open(doc.url_archivo, '_blank') : alert('Este registro normativo no tiene un archivo físico adjunto.')}
-                        title={doc.url_archivo ? "Ver Documento Original" : "Sin Archivo Adjunto"}
-                        style={{ background: doc.url_archivo ? '#E3F2FD' : '#F8FAFC', border: doc.url_archivo ? '1px solid #90CAF9' : '1px solid #CBD5E1', color: doc.url_archivo ? '#1976D2' : '#95A5A6', padding: '4px 8px', borderRadius: '4px', cursor: doc.url_archivo ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center' }}
-                      >
-                        <ExternalLink size={14} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <button 
+                          onClick={() => doc.url_archivo ? window.open(doc.url_archivo, '_blank') : alert('Este registro normativo no tiene un archivo físico adjunto.')}
+                          title={doc.url_archivo ? "Ver Documento Original" : "Sin Archivo Adjunto"}
+                          style={{ background: doc.url_archivo ? '#E3F2FD' : '#F8FAFC', border: doc.url_archivo ? '1px solid #90CAF9' : '1px solid #CBD5E1', color: doc.url_archivo ? '#1976D2' : '#95A5A6', padding: '6px', borderRadius: '4px', cursor: doc.url_archivo ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center' }}
+                        >
+                          <ExternalLink size={14} />
+                        </button>
+                        {/* Descarga Forzada (HTML5 download) */}
+                        <a 
+                          href={doc.url_archivo ? `${doc.url_archivo}?download=1` : '#'} 
+                          download
+                          target="_blank"
+                          rel="noreferrer"
+                          title={doc.url_archivo ? "Descargar Archivo" : "Sin Archivo Adjunto"}
+                          style={{ background: doc.url_archivo ? '#DEF7EC' : '#F8FAFC', border: doc.url_archivo ? '1px solid #84E1BC' : '1px solid #CBD5E1', color: doc.url_archivo ? '#059669' : '#95A5A6', padding: '6px', borderRadius: '4px', cursor: doc.url_archivo ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center', pointerEvents: doc.url_archivo ? 'auto' : 'none' }}
+                        >
+                          <DownloadCloud size={14} />
+                        </a>
+                        {isEditor && (
+                          <button 
+                            onClick={() => handleEdit(doc)}
+                            title="Editar Documentación"
+                            style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', color: '#4B5563', padding: '6px', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
+                          >
+                            <Settings size={14} />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -341,7 +394,7 @@ export default function BovedaCalidad() {
               <div style={{ padding: '20px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1F4287', color: 'white', borderRadius: '8px 8px 0 0' }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <ShieldCheck size={20} color="white" />
-                    <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'white' }}>Clasificar Documento en Bóveda</h2>
+                    <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'white' }}>{editingId ? 'Editar Documento de Bóveda' : 'Clasificar Documento en Bóveda'}</h2>
                  </div>
                  <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}><X size={24}/></button>
               </div>
@@ -473,7 +526,7 @@ export default function BovedaCalidad() {
                          ) : (
                             <>
                               <UploadCloud size={28} color={dragActive ? '#2980b9' : '#95A5A6'} style={{ marginBottom: '8px' }} />
-                              <div style={{ fontSize: '13px', color: '#34495E', fontWeight: 600 }}>Arrastra tu documento normativo PDF aquí</div>
+                              <div style={{ fontSize: '13px', color: '#34495E', fontWeight: 600 }}>{editingId ? 'Arrastra un PDF nuevo **solo si** deseas sobrescribir el actual' : 'Arrastra tu documento normativo PDF aquí'}</div>
                             </>
                          )}
                      </div>
