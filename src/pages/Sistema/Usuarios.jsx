@@ -20,6 +20,7 @@ export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [localidadesCat, setLocalidadesCat] = useState([]); // Diccionario de localidades
+  const [departamentosCat, setDepartamentosCat] = useState([]); // Diccionario de departamentos
 
   // Estados Formulario Modal
   const [showModal, setShowModal] = useState(false);
@@ -38,6 +39,7 @@ export default function GestionUsuarios() {
     apellido_materno: '',
     email: '',
     rol_principal: 'USUARIO',
+    departamento: '',
     empresa_id: ['AUTOCOM'],
     es_activo: true,
     caducidad_pwd: '',
@@ -61,8 +63,12 @@ export default function GestionUsuarios() {
 
   const fetchDependencias = async () => {
     // Para el modal, llenamos las localidades desde los catálogos maestras
-    const { data } = await supabase.from('sys_catalogos').select('id, valor').eq('familia', 'LOCALIDAD').eq('es_activo', true);
-    if(data) setLocalidadesCat(data);
+    const { data: locData } = await supabase.from('sys_catalogos').select('id, valor').eq('familia', 'LOCALIDAD').eq('es_activo', true);
+    if(locData) setLocalidadesCat(locData);
+    
+    // Obtener departamentos
+    const { data: depData } = await supabase.from('sys_catalogos').select('id, valor').eq('familia', 'DEPARTAMENTOS').eq('es_activo', true).order('valor');
+    if(depData) setDepartamentosCat(depData);
   };
 
   const fetchUsuarios = async () => {
@@ -159,6 +165,7 @@ export default function GestionUsuarios() {
          apellido_materno: formConfig.apellido_materno,
          email: formConfig.email.toLowerCase(),
          rol_principal: formConfig.rol_principal,
+         departamento: formConfig.departamento || null,
          empresa_id: typeof formConfig.empresa_id === 'object' ? JSON.stringify(formConfig.empresa_id) : formConfig.empresa_id,
          es_activo: formConfig.es_activo,
          caducidad_pwd: formConfig.caducidad_pwd || null,
@@ -363,11 +370,22 @@ export default function GestionUsuarios() {
                     </div>
                  </div>
 
-                 <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>Rol Principal (Jerarquía)</label>
-                    <select name="rol_principal" value={formConfig.rol_principal} onChange={handleChange} style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', background: 'white', outline: 'none' }}>
-                       {rolesUI.map(rol => <option key={rol} value={rol}>{rol}</option>)}
-                    </select>
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>Rol Principal (Jerarquía)</label>
+                        <select name="rol_principal" value={formConfig.rol_principal} onChange={handleChange} style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', background: 'white', outline: 'none' }}>
+                           {rolesUI.map(rol => <option key={rol} value={rol}>{rol}</option>)}
+                        </select>
+                     </div>
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>Departamento (Área)</label>
+                        <select name="departamento" value={formConfig.departamento || ''} onChange={handleChange} style={{ width: '100%', height: '40px', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', background: 'white', outline: 'none' }}>
+                           <option value="">Seleccione un área...</option>
+                           {departamentosCat.map(depto => (
+                             <option key={depto.id} value={depto.valor}>{depto.valor}</option>
+                           ))}
+                        </select>
+                     </div>
                  </div>
 
                  <div style={{ marginBottom: '24px' }}>

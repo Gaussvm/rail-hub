@@ -31,8 +31,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
-// Categorías del diccionario plano
 const DICCIONARIOS = [
+  { id: 'DEPARTAMENTOS', label: 'Departamentos', icon: <Building size={18} /> },
   { id: 'LOCALIDAD', label: 'Localidades', icon: <MapPin size={18} /> },
   { id: 'TIPO_GASTO', label: 'Tipo de Gasto', icon: <CreditCard size={18} /> },
   { id: 'MODALIDAD_CONTRATACION', label: 'Modalidades de Contratación', icon: <Briefcase size={18} /> },

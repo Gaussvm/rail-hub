@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone, Search, Trash2, Filter } from 'lucide-react';
+import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone, Search, Trash2, Filter, ChevronDown } from 'lucide-react';
 
 const DirectorioRRHH = () => {
   const [empleados, setEmpleados] = useState([]);
+  const [departamentosCat, setDepartamentosCat] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepto, setFilterDepto] = useState('TODOS');
@@ -27,7 +28,20 @@ const DirectorioRRHH = () => {
 
   useEffect(() => {
     fetchEmpleados();
+    fetchDepartamentos();
   }, []);
+
+  const fetchDepartamentos = async () => {
+    const { data, error } = await supabase
+      .from('sys_catalogos')
+      .select('id, valor')
+      .eq('familia', 'DEPARTAMENTOS')
+      .eq('es_activo', true)
+      .order('valor');
+    if (!error && data) {
+      setDepartamentosCat(data);
+    }
+  };
 
   const fetchEmpleados = async () => {
     try {
@@ -173,11 +187,9 @@ const DirectorioRRHH = () => {
             style={{ width: '100%', padding: '10px 10px 10px 36px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '13px', outline: 'none', background: 'white', color: '#374151', appearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
           >
             <option value="TODOS">Todos los departamentos</option>
-            <option value="DIRECCIÓN">Dirección</option>
-            <option value="OPERACIONES">Operaciones</option>
-            <option value="TRÁFICO">Tráfico</option>
-            <option value="CALIDAD">Calidad y S.I.C</option>
-            <option value="ADMINISTRACIÓN">Administración</option>
+            {departamentosCat.map(depto => (
+              <option key={depto.id} value={depto.valor}>{depto.valor}</option>
+            ))}
           </select>
           <div style={{ position: 'absolute', right: '12px', top: '12px', pointerEvents: 'none' }}>
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -310,11 +322,10 @@ const DirectorioRRHH = () => {
                     onChange={(e) => setForm({...form, departamento: e.target.value})}
                     style={{ width: '100%', padding: '10px 12px', border: '1px solid #D1D5DB', borderRadius: '6px', fontSize: '14px', outline: 'none', background: 'white' }}
                   >
-                    <option value="DIRECCIÓN">Dirección</option>
-                    <option value="OPERACIONES">Operaciones</option>
-                    <option value="TRÁFICO">Tráfico</option>
-                    <option value="CALIDAD">Calidad y S.I.C</option>
-                    <option value="ADMINISTRACIÓN">Administración</option>
+                    <option value="">Seleccione un área...</option>
+                    {departamentosCat.map(depto => (
+                      <option key={depto.id} value={depto.valor}>{depto.valor}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
