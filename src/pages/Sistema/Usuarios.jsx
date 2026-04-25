@@ -206,7 +206,7 @@ export default function GestionUsuarios() {
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#1F4287', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <ShieldCheck size={28} />
-            Control de Accesos (RBAC)
+            Usuarios
           </h1>
           <p style={{ margin: '8px 0 0', color: '#6A7885', fontSize: '14px' }}>
             Gestión corporativa de usuarios, perfiles operativos y matrices de seguridad de RailHub.

@@ -255,11 +255,11 @@ const Sidebar = () => {
               <div className="sidebar-submenu">
                 <NavLink to="/catalogos" end className={({isActive}) => isActive ? "nav-item sub-item active" : "nav-item sub-item"}>
                   <Settings size={16} />
-                  <span>Catálogos Maestros</span>
+                  <span>Catálogos</span>
                 </NavLink>
                 <NavLink to="/catalogos/usuarios" className={({isActive}) => isActive ? "nav-item sub-item active" : "nav-item sub-item"}>
                   <Users size={16} />
-                  <span>Control de Accesos (RBAC)</span>
+                  <span>Usuarios</span>
                 </NavLink>
               </div>
             )}

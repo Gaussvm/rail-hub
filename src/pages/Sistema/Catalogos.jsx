@@ -254,9 +254,9 @@ export default function CatalogosMaestros() {
       
       {/* SIDEBAR DE CATÁLOGOS */}
       <div style={{ width: '280px', background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1F4287', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1F4287', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 24px 0' }}>
           <Settings size={20} color="#3498DB" />
-          Configuración
+          Catálogos
         </h2>
 
         <div style={{ fontSize: '11px', fontWeight: 700, color: '#95A5A6', marginBottom: '12px', letterSpacing: '0.05em' }}>
