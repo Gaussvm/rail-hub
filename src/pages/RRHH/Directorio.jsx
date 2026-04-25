@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone, Search } from 'lucide-react';
+import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone, Search, Trash2, Filter } from 'lucide-react';
 
 const DirectorioRRHH = () => {
   const [empleados, setEmpleados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterDepto, setFilterDepto] = useState('TODOS');
   
   // Estado UI
   const [showModal, setShowModal] = useState(false);
@@ -109,6 +110,25 @@ const DirectorioRRHH = () => {
     }
   };
 
+  const handleDelete = async (id, nombre) => {
+    if (window.confirm(`¿Está seguro de que desea eliminar a ${nombre} de la base de datos de RRHH?\nEsta acción es irreversible y podría afectar su vinculación con registros financieros históricos.`)) {
+      try {
+        const { error } = await supabase
+          .from('fin_empleados')
+          .delete()
+          .eq('id', id);
+          
+        if (error) throw error;
+        
+        // Refrescar tabla tras eliminación
+        fetchEmpleados();
+      } catch (error) {
+        console.error('Error eliminando empleado:', error.message);
+        alert('Hubo un error al intentar eliminar a este empleado. Revise los permisos o dependencias activas.');
+      }
+    }
+  };
+
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       
@@ -132,17 +152,38 @@ const DirectorioRRHH = () => {
         </button>
       </div>
 
-      {/* CONTROLES (Buscador) */}
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '16px' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
+      {/* CONTROLES (Buscador y Filtros) */}
+      <div style={{ marginBottom: '20px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '300px', position: 'relative' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: '#9CA3AF' }} />
           <input 
             type="text" 
             placeholder="Buscar por nombre, departamento o puesto..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '10px 10px 10px 38px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '14px', outline: 'none' }}
+            style={{ width: '100%', padding: '10px 10px 10px 38px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
           />
+        </div>
+        
+        <div style={{ position: 'relative', width: '250px' }}>
+          <Filter size={16} style={{ position: 'absolute', left: '12px', top: '11px', color: '#9CA3AF' }} />
+          <select 
+            value={filterDepto}
+            onChange={(e) => setFilterDepto(e.target.value)}
+            style={{ width: '100%', padding: '10px 10px 10px 36px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '13px', outline: 'none', background: 'white', color: '#374151', appearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+          >
+            <option value="TODOS">Todos los departamentos</option>
+            <option value="DIRECCIÓN">Dirección</option>
+            <option value="OPERACIONES">Operaciones</option>
+            <option value="TRÁFICO">Tráfico</option>
+            <option value="CALIDAD">Calidad y S.I.C</option>
+            <option value="ADMINISTRACIÓN">Administración</option>
+          </select>
+          <div style={{ position: 'absolute', right: '12px', top: '12px', pointerEvents: 'none' }}>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L5 5L9 1" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -150,9 +191,10 @@ const DirectorioRRHH = () => {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>Cargando personal...</div>
       ) : empleados.filter(emp => 
-        (emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (filterDepto === 'TODOS' || emp.departamento === filterDepto) &&
+        ((emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
         (emp.departamento || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase()))
       ).length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #D1D5DB' }}>
           <Users size={48} style={{ color: '#9CA3AF', margin: '0 auto 16px' }} />
@@ -174,9 +216,10 @@ const DirectorioRRHH = () => {
             <tbody>
               {empleados
                 .filter(emp => 
-                  (emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                  (filterDepto === 'TODOS' || emp.departamento === filterDepto) &&
+                  ((emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
                   (emp.departamento || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase())
+                  (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase()))
                 )
                 .map(emp => (
                 <tr key={emp.id} style={{ borderBottom: '1px solid #E5E7EB', '&:last-child': { borderBottom: 'none' } }}>
@@ -203,12 +246,25 @@ const DirectorioRRHH = () => {
                     </span>
                   </td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
-                    <button 
-                      onClick={() => handleEditClick(emp)}
-                      style={{ background: 'transparent', border: '1px solid #D1D5DB', padding: '6px 12px', borderRadius: '6px', color: '#374151', cursor: 'pointer', fontSize: '13px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                    >
-                      <Briefcase size={14} /> Editar
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                      <button 
+                        onClick={() => handleEditClick(emp)}
+                        style={{ background: 'transparent', border: '1px solid #E5E7EB', padding: '6px 12px', borderRadius: '6px', color: '#4B5563', cursor: 'pointer', fontSize: '13px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.borderColor = '#D1D5DB'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#E5E7EB'; }}
+                      >
+                        <Briefcase size={14} /> Editar
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(emp.id, emp.nombre_completo)}
+                        style={{ background: 'transparent', border: '1px solid #FEE2E2', padding: '6px 10px', borderRadius: '6px', color: '#EF4444', cursor: 'pointer', fontSize: '13px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}
+                        title="Eliminar Personal"
+                        onMouseOver={(e) => { e.currentTarget.style.background = '#FEF2F2'; e.currentTarget.style.borderColor = '#FCA5A5'; e.currentTarget.style.color = '#B91C1C'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#FEE2E2'; e.currentTarget.style.color = '#EF4444'; }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
