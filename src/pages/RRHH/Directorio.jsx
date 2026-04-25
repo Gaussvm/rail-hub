@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone } from 'lucide-react';
+import { Users, Plus, UserPlus, Briefcase, Mail, Building, Phone, Search } from 'lucide-react';
 
 const DirectorioRRHH = () => {
   const [empleados, setEmpleados] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Estado UI
   const [showModal, setShowModal] = useState(false);
@@ -131,49 +132,88 @@ const DirectorioRRHH = () => {
         </button>
       </div>
 
-      {/* GRID DE EMPLEADOS */}
+      {/* CONTROLES (Buscador) */}
+      <div style={{ marginBottom: '20px', display: 'flex', gap: '16px' }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: '#9CA3AF' }} />
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre, departamento o puesto..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: '100%', padding: '10px 10px 10px 38px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '14px', outline: 'none' }}
+          />
+        </div>
+      </div>
+
+      {/* TABLA DE EMPLEADOS */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280' }}>Cargando personal...</div>
-      ) : empleados.length === 0 ? (
+      ) : empleados.filter(emp => 
+        (emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (emp.departamento || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase())
+      ).length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px', background: '#F9FAFB', borderRadius: '8px', border: '1px dashed #D1D5DB' }}>
           <Users size={48} style={{ color: '#9CA3AF', margin: '0 auto 16px' }} />
-          <h3 style={{ margin: '0 0 8px', color: '#374151' }}>No hay empleados registrados</h3>
-          <p style={{ margin: 0, color: '#6B7280', fontSize: '14px' }}>Comienza registrando a los directivos y supervisores operativos.</p>
+          <h3 style={{ margin: '0 0 8px', color: '#374151' }}>No hay resultados</h3>
+          <p style={{ margin: 0, color: '#6B7280', fontSize: '14px' }}>No se encontraron empleados que coincidan con la búsqueda.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
-          {empleados.map(emp => (
-            <div key={emp.id} style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', position: 'relative' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E40AF', fontWeight: 'bold', fontSize: '18px' }}>
-                  {emp.nombre_completo.charAt(0)}
-                </div>
-                <div>
-                  <h4 style={{ margin: 0, color: '#1F2937', fontSize: '15px', paddingRight: '24px' }}>{emp.nombre_completo}</h4>
-                  <span style={{ display: 'inline-block', marginTop: '4px', padding: '2px 8px', background: emp.estatus === 'ACTIVO' ? '#DEF7EC' : '#FDE8E8', color: emp.estatus === 'ACTIVO' ? '#03543F' : '#9B1C1C', fontSize: '10px', fontWeight: 600, borderRadius: '12px' }}>
-                    {emp.estatus}
-                  </span>
-                </div>
-              </div>
-              
-              <button 
-                onClick={() => handleEditClick(emp)}
-                style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: '#9CA3AF', cursor: 'pointer', padding: '4px' }}
-                title="Editar empleado"
-              >
-                <Briefcase size={16} />
-              </button>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#6B7280' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Building size={14} /> {emp.departamento || 'No asignado'}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Briefcase size={14} /> {emp.puesto || 'Sin puesto actual'}
-                </div>
-              </div>
-            </div>
-          ))}
+        <div style={{ overflowX: 'auto', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
+            <thead>
+              <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                <th style={{ padding: '12px 16px', color: '#4B5563', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>Nombre Completo</th>
+                <th style={{ padding: '12px 16px', color: '#4B5563', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>Depto / Puesto</th>
+                <th style={{ padding: '12px 16px', color: '#4B5563', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>Contacto</th>
+                <th style={{ padding: '12px 16px', color: '#4B5563', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>Estatus</th>
+                <th style={{ padding: '12px 16px', textAlign: 'right', color: '#4B5563', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {empleados
+                .filter(emp => 
+                  (emp.nombre_completo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                  (emp.departamento || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  (emp.puesto || '').toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map(emp => (
+                <tr key={emp.id} style={{ borderBottom: '1px solid #E5E7EB', '&:last-child': { borderBottom: 'none' } }}>
+                  <td style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E40AF', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 }}>
+                      {emp.nombre_completo.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#111827', fontSize: '14px' }}>{emp.nombre_completo}</div>
+                      {emp.rfc && <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>RFC: {emp.rfc}</div>}
+                    </div>
+                  </td>
+                  <td style={{ padding: '16px' }}>
+                    <div style={{ color: '#374151', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}><Building size={14} color="#9CA3AF" /> {emp.departamento || 'N/A'}</div>
+                    <div style={{ color: '#6B7280', fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}><Briefcase size={14} color="#9CA3AF" /> {emp.puesto || 'N/A'}</div>
+                  </td>
+                  <td style={{ padding: '16px' }}>
+                    <div style={{ color: '#374151', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={14} color="#9CA3AF" /> {emp.correo_electronico || 'Sin correo'}</div>
+                    <div style={{ color: '#6B7280', fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} color="#9CA3AF" /> {emp.telefono || 'Sin teléfono'}</div>
+                  </td>
+                  <td style={{ padding: '16px' }}>
+                    <span style={{ display: 'inline-block', padding: '2px 8px', background: emp.estatus === 'ACTIVO' ? '#DEF7EC' : '#FDE8E8', color: emp.estatus === 'ACTIVO' ? '#03543F' : '#9B1C1C', fontSize: '12px', fontWeight: 600, borderRadius: '12px' }}>
+                      {emp.estatus}
+                    </span>
+                  </td>
+                  <td style={{ padding: '16px', textAlign: 'right' }}>
+                    <button 
+                      onClick={() => handleEditClick(emp)}
+                      style={{ background: 'transparent', border: '1px solid #D1D5DB', padding: '6px 12px', borderRadius: '6px', color: '#374151', cursor: 'pointer', fontSize: '13px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Briefcase size={14} /> Editar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
